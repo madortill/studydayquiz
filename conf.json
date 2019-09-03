@@ -1,0 +1,145 @@
+{
+    "templates": {
+        "whoami": {
+            "title": "מי אני?",
+            "answers": [
+                "אחיינ/ית של שרי",
+                "בנ/ת של שלומי",
+                "בנ/ת של מיגל"
+            ],
+            "type": "choose 1 of n"
+        },
+        "what-tb": {
+            "title": "אילו בהד\"ים אלו?",
+            "type": "choose 1 of n"
+        },
+        "what-rank": {
+            "title": "איזו דרגה זו?",
+            "type": "choose 1 of n"
+        }
+    },
+    "questions": [
+        {
+            "contentType": "img",
+            "template": "whoami",
+            "correctSequence": [
+                1,
+                0,
+                1,
+                2,
+                2
+            ]
+        },
+        {
+            "contentType": "img",
+            "template": "what-tb",
+            "answers": [
+                "בה\"די אטל",
+                "בה\"די אכ\"א",
+                "בה\"די חינוך",
+                "בה\"די תקשוב",
+                "בה\"די תחזוקה"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "contentType": "img",
+            "template": "what-tb",
+            "answers": [
+                "בה\"די אכ\"א",
+                "בה\"די חינוך",
+                "בה\"די תקשוב",
+                "בה\"די שלישות"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "title": "",
+            "contentType": "img",
+            "type": "choose 1 of n",
+            "answers": [
+                "בה\"ד תיקשוב",
+                "בסמ\"ך",
+                "מצפן",
+                "כנף 25"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "contentType": "img",
+            "template": "what-rank",
+            "answers": [
+                "אל\"ם",
+                "רב\"ט",
+                "תת אלוף",
+                "סא\"ל"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "contentType": "img",
+            "template": "what-rank",
+            "answers": [
+                "רנ\"ג",
+                "רס\"ב",
+                "רס\"ר",
+                "סמ\"ר"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "title": "למי צריך להצדיע ביחידה?",
+            "type": "choose 1 of n",
+            "answers": [
+                "אל\"ם חיים רבן",
+                "רס\"ן מיגל לויתן",
+                "רב\"ט צליל עמר",
+                "סא\"ל הילה בן מנדל"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "title": "מי שונא את הגופן דוד במצגות",
+            "type": "choose 1 of n",
+            "answers": [
+                "שרי חזי",
+                "שלומי אוגרן",
+                "מיגל לויתן",
+                "דניאל פלג"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "title": "למי חשוב דיגום ביחידה?",
+            "type": "choose 1 of n",
+            "answers": [
+                "נעמה נבון",
+                "בן מצא",
+                "אריאל עמר",
+                "נועה עובדיה",
+                {
+                    "text": "לישנוף, הוא רואה אותך ואת כל מעשך, היזהר פן תמצא את עצמך תחת מבטו האימתני והיוקד",
+                    "extra": "till-shady"
+                }
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "title": "מה המשמעות סמל מדור טי\"ל",
+            "type": "choose 1 of n",
+            "answers": [
+                "ינשוף - הדרכה, חץ - חתירה למטרה, עיניים חדות, WIFI - טכנולוגיה",
+                "ינשוף - הדרכה, חץ - גישה חיובית, עיניים - בוהקות, WIFI - קליטה",
+                "ינשוף - חינוך, חץ - שמאלניים, עיניים - מתלהבות, WIFI - הפצה רחבה",
+                "ינשוף - הדרכה, חץ - חתירה למגע, עיניים חדות, WIFI - פתרון גנרי"
+            ],
+            "correctAnswer": 0
+        },
+        {
+            "transition": "tillTornado",
+            "flashing": "בונוס",
+            "title": "מצא ואסוף את כל הטי\"ל בטיל!",
+            "type": "find 10 random till, timeout 100"
+        }
+    ]
+};

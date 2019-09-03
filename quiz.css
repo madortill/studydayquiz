@@ -1,0 +1,83 @@
+body {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.answer {
+  /* position: relative; */
+  width: 100%;
+  /* z-index: -1; */
+  /* border-top: 2px solid #f0f0f0;
+  border-bottom: 2px solid #f0f0f0; */
+  /* background-color: #dbdbdb; */
+  text-align: center;
+  padding: 3vh 0;
+  color: white;
+  font-size: 1.2em;
+  filter: brightness(0.9);
+}
+/* :nth-child(2n).answer {
+  background-color: whitesmoke;
+  color: black;
+} */
+.main-content {
+  text-align: center;
+  /* position: relative; */
+  width: 90vw;
+  margin-left: 5vw;
+  /* margin-top: 20vh; */
+  margin-top: 10vh;
+  /* border: 2px solid gray; */
+  /* border: 2px solid #c7c7c7; */
+  box-shadow: 0 0 3px 0 black;
+  /* background: #f0f0f0; */
+  overflow: hidden;
+  border-radius: 2vw;
+  direction: rtl;
+}
+.title {
+  font-size: 2em;
+  font-weight: bold;
+  direction: rtl;
+}
+.display {
+  /* width: calc(100% - 10px); */
+  /* padding: 5px; */
+  height: 20vh;
+  background-size: 100% 100%;
+  /* margin: 5px; */
+}
+
+.logo {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  background-image: url("img/till-logo.png");
+  background-size: 100% 100%;
+  top: 100%;
+  left: 0;
+  transform: translate(25%, -125%);
+}
+.inactive {
+  display: none;
+}
+
+.end-screen {
+  font-weight: bold;
+  font-size: 2em;
+  text-decoration: wavy;
+  text-align: center;
+}
+
+.right {
+  filter: brightness(1.2);
+}
+
+.wrong {
+  /* filter: brightness(0.5) grayscale(); */
+  filter: brightness(0.5);
+  /* filter: grayscale(); */
+}
