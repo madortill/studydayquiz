@@ -142,7 +142,9 @@ var providers = {
         el.appendChild(el.img);
         el.img.classList.add("display");
       } else el.img.classList.remove("inactive");
+      el.img.classList.add("inactive");
       el.img.src = "img/display-" + state.question + ".png";
+      el.img.onload = e => el.img.classList.remove("inactive");
     }
   },
   type: {
