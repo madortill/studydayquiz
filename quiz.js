@@ -224,7 +224,7 @@ window.onload = async function() {
 };
 
 async function prefetch() {
-  var progressBar = document.getElementsByClassName("progress-bar")[0];
+  // var progressBar = document.getElementsByClassName("progress-bar")[0];
   var prefetchContainer = document.querySelector(".pre-fetch");
   var i = 0;
   var total = 0;
@@ -240,7 +240,7 @@ async function prefetch() {
   }
   // var queue = [];
   // var queueLength = total;
-  var loaded = 0;
+  // var loaded = 0;
   for (let q of cfg.questions) {
     if (q.contentType === "img") {
       let questionCount = q.correctSequence
@@ -251,11 +251,10 @@ async function prefetch() {
         img.src = "img/display-" + i + ".jpg";
         img.index = i;
         prefetchContainer.appendChild(img);
-        img.onload = _ => {
-          loaded++;
-          progressBar.style.backgroundSize = 100 * (loaded / total) + "% 100%";
-        };
-        // await new Promise(e => (img.onload = e));
+        // img.onload = _ => {
+        //   loaded++;
+        // progressBar.style.backgroundSize = 100 * (loaded / total) + "% 100%";
+        // };
         i++;
         // progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
       }
