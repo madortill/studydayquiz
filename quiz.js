@@ -264,7 +264,7 @@ async function prefetch() {
   // await new Promise(e =>
   //   progressBar.addEventListener("transitionend", e, true)
   // );
-  document.getElementsByClassName("loading")[0].remove();
+  // document.getElementsByClassName("loading")[0].remove();
 }
 
 function parse() {
