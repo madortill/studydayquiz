@@ -115,12 +115,13 @@ var state = {
   questionIndex: 0,
   question: 0,
   correct: 0,
-  currentQuestion: undefined
+  currentQuestion: undefined,
+  next: false
 };
 
 var providers = {
   property: {
-    title: function(title, el) {
+    title: function(title, el, question) {
       if (!el.titleEl) {
         el.titleEl = el.querySelector(".title");
         if (!el.titleEl) {
@@ -129,6 +130,9 @@ var providers = {
           el.appendChild(el.titleEl);
         }
       } else el.titleEl.classList.remove("inactive");
+      if (!question.contentType || question.contentType === "text")
+        el.titleEl.classList.add("text-only");
+      else el.titleEl.classList.remove("text-only");
       document.title = "יום למידה" + (title ? ", " + title : "");
       el.titleEl.textContent = title;
     },
@@ -137,14 +141,15 @@ var providers = {
     extra: function() {},
     contentType: function(contentType, el) {
       if (contentType !== "img") return;
-      if (!el.img) {
-        el.img = new Image();
-        el.appendChild(el.img);
-        el.img.classList.add("display");
-      } else el.img.classList.remove("inactive");
-      el.img.classList.add("inactive");
-      el.img.src = "img/display-" + state.question + ".png";
-      el.img.onload = e => el.img.classList.remove("inactive");
+      if (!el.display) {
+        el.display = el.getElementsByClassName("display-container")[0];
+        el.display.img = new Image();
+        el.display.appendChild(el.display.img);
+        el.display.img.classList.add("display");
+      } else el.display.classList.remove("inactive");
+      el.display.img.classList.add("inactive");
+      el.display.img.src = "img/display-" + state.question + ".png";
+      el.display.img.onload = e => el.display.img.classList.remove("inactive");
     }
   },
   type: {
@@ -214,37 +219,45 @@ var mainContent;
 window.onload = async function() {
   await prefetch();
   mainContent = document.getElementsByClassName("main-content")[0];
+  mainContent.classList.remove("inactive");
   parse();
 };
+
 async function prefetch() {
+  //todo... progress bar...
+  var progressBar = document.getElementsByClassName("progress-bar")[0];
   var prefetchContainer = document.querySelector(".pre-fetch");
   var i = 0;
+  var total = 0;
   for (let q of cfg.questions) {
     if (q.template) {
       Object.assign(q, cfg.templates[q.template]);
       q.template = undefined;
     }
+    if (q.contentType === "img")
+      total += q.correctSequence
+        ? q.correctSequence.length / Number(q.type.split(" ")[1])
+        : 1;
+  }
+  for (let q of cfg.questions) {
     if (q.contentType === "img") {
-      if (q.correctSequence) {
-        var currectAnswerCount = Number(q.type.split(" ")[1]);
-        for (
-          var j = 0;
-          j < q.correctSequence.length / currectAnswerCount;
-          j++
-        ) {
-          let img = new Image();
-          img.src = "img/display-" + i + ".png";
-          prefetchContainer.appendChild(img);
-          i++;
-        }
-      } else {
+      var questionCount = q.correctSequence
+        ? q.correctSequence.length / Number(q.type.split(" ")[1])
+        : 1;
+      for (var j = 0; j < questionCount; j++) {
         let img = new Image();
         img.src = "img/display-" + i + ".png";
         prefetchContainer.appendChild(img);
+        await new Promise(e => (img.onload = e));
         i++;
+        progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
       }
     }
   }
+  await new Promise(e =>
+    progressBar.addEventListener("transitionend", e, true)
+  );
+  document.getElementsByClassName("loading")[0].remove();
 }
 
 function parse() {
@@ -254,7 +267,7 @@ function parse() {
   for (let prop in state.currentQuestion) {
     if (!question.hasOwnProperty(prop)) continue;
     if (prop in providers.property) {
-      providers.property[prop](question[prop], mainContent);
+      providers.property[prop](question[prop], mainContent, question);
     } else if (prop in providers) {
       let propProviders = providers[prop];
       for (let str of question[prop].split(",")) {
@@ -272,7 +285,7 @@ function parse() {
 async function onChoice(main, question, el) {
   let correct =
     question.corrects[question.corrects.length - (question.repeat || 1)];
-  if (question.right === correct.length) return;
+  if (state.next) return;
   if (correct.indexOf(el.index) >= 0) {
     question.right++;
     if (question.right !== correct.length) {
@@ -282,6 +295,7 @@ async function onChoice(main, question, el) {
       state.correct++;
     }
   }
+  state.next = true;
   for (let ans of main.getElementsByClassName("answer")) {
     if (correct.indexOf(ans.index) >= 0) ans.classList.add("right");
     else ans.classList.add("wrong");
@@ -293,6 +307,7 @@ async function onChoice(main, question, el) {
     ans.classList.remove("wrong");
   }
   next();
+  state.next = false;
 }
 
 function endScreen() {
@@ -309,7 +324,7 @@ function endScreen() {
     else img = "till-angry";
     let display = new Image();
     display.src = "img/" + img + ".png";
-    display.className = "display";
+    display.className = "display-container";
     screen.appendChild(display);
   }
   var text = document.createElement("div");
