@@ -148,7 +148,7 @@ var providers = {
         el.display.img.classList.add("display");
       } else el.display.classList.remove("inactive");
       el.display.img.classList.add("inactive");
-      el.display.img.src = "img/display-" + state.question + ".png";
+      el.display.img.src = "img/display-" + state.question + ".jpg";
       el.display.img.onload = e => el.display.img.classList.remove("inactive");
     }
   },
@@ -224,7 +224,6 @@ window.onload = async function() {
 };
 
 async function prefetch() {
-  //todo... progress bar...
   var progressBar = document.getElementsByClassName("progress-bar")[0];
   var prefetchContainer = document.querySelector(".pre-fetch");
   var i = 0;
@@ -246,7 +245,7 @@ async function prefetch() {
         : 1;
       for (var j = 0; j < questionCount; j++) {
         let img = new Image();
-        img.src = "img/display-" + i + ".png";
+        img.src = "img/display-" + i + ".jpg";
         prefetchContainer.appendChild(img);
         await new Promise(e => (img.onload = e));
         i++;
@@ -323,7 +322,7 @@ function endScreen() {
     else if (state.correct >= state.question * 0.35) img = "till";
     else img = "till-angry";
     let display = new Image();
-    display.src = "img/" + img + ".png";
+    display.src = "img/" + img + ".jpg";
     display.className = "display-container";
     screen.appendChild(display);
   }

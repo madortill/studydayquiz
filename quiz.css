@@ -64,7 +64,7 @@ body {
   position: absolute;
   width: 64px;
   height: 64px;
-  background-image: url("img/till-logo.png");
+  background-image: url("img/till-logo.jpg");
   background-size: 100% 100%;
   top: 100%;
   left: 0;
@@ -107,6 +107,6 @@ body {
   height: 1vh;
   background-repeat: no-repeat;
   background-image: linear-gradient(45deg, cadetblue, aquamarine);
-  transition: 0.5s background-size;
+  transition: 0.25s background-size;
   background-size: 0 100%;
 }
