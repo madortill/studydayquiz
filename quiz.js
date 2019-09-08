@@ -43,7 +43,7 @@ var cfg = {
       title: "",
       contentType: "img",
       type: "choose 1 of n",
-      answers: ['בה"ד תקשוב', 'בסמ"ך', "מצפן", "כנף 25"],
+      answers: ['בה"ד תקשוב', 'בסמ"ח', "מצפן", "כנף 25"],
       correctAnswer: 0
     },
     {
@@ -65,7 +65,7 @@ var cfg = {
         'אל"ם חיים רבן',
         'רס"ן מיגל לויתן',
         'רב"ט צליל עמר',
-        'סא"ל הילה בן מנדל'
+        'סא"ל הילה בן מנדה'
       ],
       correctAnswer: 0
     },
@@ -158,11 +158,11 @@ var providers = {
         question.corrects[question.corrects.length - (question.repeat || 1)];
       let left = new Array(...question.answers);
       while (left.length) {
-        var cls = String.fromCharCode("a".charCodeAt(0) + i);
+        let cls = String.fromCharCode("a".charCodeAt(0) + i);
         let index = Math.round(Math.random() * (left.length - 1));
         let answerText = left[index];
         left = left.removeIndex(index);
-        var answer = el.querySelector("." + cls);
+        let answer = el.querySelector("." + cls);
         if (!answer) {
           answer = document.createElement("div");
           answer.classList.add("answer");
