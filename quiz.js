@@ -305,7 +305,7 @@ function endScreen() {
   var text = document.createElement("div");
   text.textContent =
     "סיימת את חידון יום הלמידה עם " +
-    (state.correct / state.question) * 100 +
+    Math.floor((state.correct / state.question) * 100) +
     " נקודות.";
 
   screen.append(text);
