@@ -241,7 +241,7 @@ async function prefetch() {
   }
   for (let q of cfg.questions) {
     if (q.contentType === "img") {
-      var questionCount = q.correctSequence
+      let questionCount = q.correctSequence
         ? q.correctSequence.length / Number(q.type.split(" ")[1])
         : 1;
       for (var j = 0; j < questionCount; j++) {
