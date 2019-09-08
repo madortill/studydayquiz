@@ -154,8 +154,6 @@ var providers = {
       if (question.correctSequence && !question.repeat)
         question.repeat = question.correctSequence.length / params[0];
       if (!question.corrects) question.corrects = parseChoice(params, question);
-      let correct =
-        question.corrects[question.corrects.length - (question.repeat || 1)];
       let left = new Array(...question.answers);
       while (left.length) {
         let cls = String.fromCharCode("a".charCodeAt(0) + i);
@@ -176,21 +174,6 @@ var providers = {
         i++;
         answer.onclick = e => onChoice(el, question, e.target);
       }
-      // for (let ans of question.answers) {
-      //   var cls = String.fromCharCode("a".charCodeAt(0) + i);
-      //   var answer = el.querySelector("." + cls);
-      //   if (!answer) {
-      //     answer = document.createElement("div");
-      //     answer.classList.add("answer");
-      //     answer.classList.add(cls);
-      //     answer.style.backgroundColor =
-      //       "#" + rgbFromByte((i * 15 + 1 + 8 + 64) % 255).toString(16);
-      //   } else answer.classList.remove("inactive");
-      //   answer.isCorrect = correct.indexOf(i) > 0;
-      //   answer.textContent = ans;
-      //   i++;
-      //   answer.onclick = el.appendChild(answer);
-      // }
     },
     find: function(params, question, el) {
       var count = Number(params[0]);
@@ -228,17 +211,44 @@ var providers = {
 
 var mainContent;
 
-window.onload = function() {
+window.onload = async function() {
+  await prefetch();
   mainContent = document.getElementsByClassName("main-content")[0];
   parse();
 };
+async function prefetch() {
+  var prefetchContainer = document.querySelector(".pre-fetch");
+  var i = 0;
+  for (let q of cfg.questions) {
+    if (q.template) {
+      Object.assign(q, cfg.templates[q.template]);
+      q.template = undefined;
+    }
+    if (q.contentType === "img") {
+      if (q.correctSequence) {
+        var currectAnswerCount = Number(q.type.split(" ")[1]);
+        for (
+          var j = 0;
+          j < q.correctSequence.length / currectAnswerCount;
+          j++
+        ) {
+          let img = new Image();
+          img.src = "img/display-" + i + ".png";
+          prefetchContainer.appendChild(img);
+          i++;
+        }
+      } else {
+        let img = new Image();
+        img.src = "img/display-" + i + ".png";
+        prefetchContainer.appendChild(img);
+        i++;
+      }
+    }
+  }
+}
 
 function parse() {
   let question = cfg.questions[state.questionIndex];
-  if (question.template) {
-    Object.assign(question, cfg.templates[question.template]);
-    question.template = undefined;
-  }
   if (!state.currentQuestion)
     state.currentQuestion = Object.assign({}, question);
   for (let prop in state.currentQuestion) {
@@ -294,7 +304,7 @@ function endScreen() {
   {
     let img;
     if (state.correct >= state.question * 0.9) img = "till-happy";
-    else if (state.correct >= state.question * 0.5) img = "till-statisfied";
+    else if (state.correct >= state.question * 0.5) img = "till-satisfied";
     else if (state.correct >= state.question * 0.35) img = "till";
     else img = "till-angry";
     let display = new Image();
@@ -307,6 +317,7 @@ function endScreen() {
     "סיימת את חידון יום הלמידה עם " +
     Math.floor((state.correct / state.question) * 100) +
     " נקודות.";
+  text.style.direction = "rtl";
 
   screen.append(text);
   document.body.append(screen);

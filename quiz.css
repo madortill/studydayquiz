@@ -6,6 +6,10 @@ body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+.pre-fetch {
+  /* visibility: hidden; */
+  display: none;
+}
 .answer {
   /* position: relative; */
   width: 100%;
