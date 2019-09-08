@@ -238,7 +238,9 @@ async function prefetch() {
         ? q.correctSequence.length / Number(q.type.split(" ")[1])
         : 1;
   }
-  var queue = [];
+  // var queue = [];
+  // var queueLength = total;
+  var loaded = 0;
   for (let q of cfg.questions) {
     if (q.contentType === "img") {
       let questionCount = q.correctSequence
@@ -247,11 +249,11 @@ async function prefetch() {
       for (var j = 0; j < questionCount; j++) {
         let img = new Image();
         img.src = "img/display-" + i + ".jpg";
+        img.index = i;
         prefetchContainer.appendChild(img);
-        queue.push(img);
         img.onload = _ => {
-          queue.length--;
-          progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
+          loaded++;
+          progressBar.style.backgroundSize = 100 * (loaded / total) + "% 100%";
         };
         // await new Promise(e => (img.onload = e));
         i++;
@@ -259,11 +261,10 @@ async function prefetch() {
       }
     }
   }
-  while (queue.length) await sleep(100);
 
-  // await new Promise(e =>
-  //   progressBar.addEventListener("transitionend", e, true)
-  // );
+  await new Promise(e =>
+    progressBar.addEventListener("transitionend", e, true)
+  );
   document.getElementsByClassName("loading")[0].remove();
 }
 
