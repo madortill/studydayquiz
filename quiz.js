@@ -238,6 +238,7 @@ async function prefetch() {
         ? q.correctSequence.length / Number(q.type.split(" ")[1])
         : 1;
   }
+  var queue = [];
   for (let q of cfg.questions) {
     if (q.contentType === "img") {
       let questionCount = q.correctSequence
@@ -247,15 +248,22 @@ async function prefetch() {
         let img = new Image();
         img.src = "img/display-" + i + ".jpg";
         prefetchContainer.appendChild(img);
-        await new Promise(e => (img.onload = e));
+        queue.push(img);
+        img.onload = _ => {
+          queue.length--;
+          progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
+        };
+        // await new Promise(e => (img.onload = e));
         i++;
-        progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
+        // progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
       }
     }
   }
-  await new Promise(e =>
-    progressBar.addEventListener("transitionend", e, true)
-  );
+  while (queue.length) await sleep(100);
+
+  // await new Promise(e =>
+  //   progressBar.addEventListener("transitionend", e, true)
+  // );
   document.getElementsByClassName("loading")[0].remove();
 }
 
