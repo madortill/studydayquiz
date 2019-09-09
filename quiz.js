@@ -82,17 +82,18 @@ var cfg = {
         "נעמה נבון",
         "בן מצא",
         "אריאל עמר",
-        "נועה עובדיה"
-        // {
-        //   text:
-        //     "לישנוף, הוא רואה אותך ואת כל מעשך, היזהר פן תמצא את עצמך תחת מבטו האימתני והיוקד",
-        //   extra: "till-shady"
-        // }
+        "נועה עובדיה",
+        {
+          chance: 0.3,
+          text:
+            "לישנוף, הוא רואה אותך ואת כל מעשך, היזהר פן תמצא את עצמך תחת מבטו האימתני והיוקד",
+          extra: "till-shady"
+        }
       ],
       correctAnswer: 0
     },
     {
-      title: 'מה המשמעות סמל מדור טי"ל',
+      title: 'מה משמעות סמל מדור טי"ל',
       type: "choose 1 of n",
       answers: [
         "ינשוף - הדרכה, חץ - חתירה למטרה, עיניים חדות, WIFI - טכנולוגיה",
@@ -106,6 +107,7 @@ var cfg = {
     //   transition: "tillTornado",
     //   flashing: "בונוס",
     //   title: 'מצא ואסוף את כל הטי"ל בטיל!',
+    // backButton: "img/rocket.png"
     //   type: "find 10 random till, timeout 100"
     // }
   ]
@@ -138,7 +140,12 @@ var providers = {
     },
 
     flashing: function() {},
-    extra: function() {},
+    extra: function(el, tp) {
+      var img = new Image();
+      img.src = "img/" + tp + ".png";
+      img.classList.add("extra");
+      el.appendChild(img);
+    },
     contentType: function(contentType, el) {
       if (contentType !== "img") return;
       if (!el.display) {
@@ -160,11 +167,30 @@ var providers = {
         question.repeat = question.correctSequence.length / params[0];
       if (!question.corrects) question.corrects = parseChoice(params, question);
       let left = new Array(...question.answers);
+      let extraQuestion;
       while (left.length) {
         let cls = String.fromCharCode("a".charCodeAt(0) + i);
         let index = Math.round(Math.random() * (left.length - 1));
-        let answerText = left[index];
+        let answerConf = left[index];
         left = left.removeIndex(index);
+        if (answerConf instanceof Object) {
+          extraQuestion = answerConf;
+          continue;
+        }
+        let answer = answerElement(el, i);
+        answer.index = question.answers.indexOf(answerConf);
+        answer.textContent = answerConf;
+        i++;
+        answer.onclick = e => onChoice(el, question, e.target);
+      }
+      if (extraQuestion && extraQuestion.chance > Math.random()) {
+        var answer = answerElement(el, i);
+        if (extraQuestion.extra)
+          providers.property.extra(answer, extraQuestion.extra);
+        answer.append(extraQuestion.text);
+      }
+      function answerElement(el, i) {
+        let cls = String.fromCharCode("a".charCodeAt(0) + i);
         let answer = el.querySelector("." + cls);
         if (!answer) {
           answer = document.createElement("div");
@@ -174,22 +200,32 @@ var providers = {
             "#" + rgbFromByte((i * 15 + 1 + 8 + 64) % 255).toString(16);
           el.appendChild(answer);
         } else answer.classList.remove("inactive");
-        answer.index = question.answers.indexOf(answerText);
-        answer.textContent = answerText;
-        i++;
-        answer.onclick = e => onChoice(el, question, e.target);
+        answer.index = question.answers.indexOf(extraQuestion);
+        return answer;
       }
     },
     find: function(params, question, el) {
       var count = Number(params[0]);
+      question.toFind = count;
+      question.right = 0;
+      var elements = [];
       if (params[1] in providers.type)
-        placeRandom(...providers.type[params[1]](params[2], count));
-      else for (var i = 0; i < count; i++) placeRandom(params[1]);
+        elements = placeRandom(
+          el,
+          ...providers.type[params[1]](params[2], count)
+        );
+      else
+        for (var i = 0; i < count; i++)
+          elements.push(...placeRandom(params[1]));
+      for (let element of elements) {
+        element.onclick = _ => iconClicked(el, state.question, element);
+        el.appendChild(element);
+      }
     },
     random: function(type, n) {
       var provider = providers.random[type];
-      var rand = new Array(Number(type[1]));
-      for (var i = 0; i < n.length; i++)
+      var rand = new Array(Number(n));
+      for (var i = 0; i < n; i++)
         rand[i] = provider[Math.floor(Math.random() * provider.length)];
       return rand;
     },
@@ -202,14 +238,21 @@ var providers = {
     till: [
       "till",
       "till-white",
-      "till-blinking",
-      "till-blinking-one-eye",
-      "till-shady"
+      "till-shady",
+      "till-happy",
+      "till-angry",
+      "till-angry-hollow"
     ]
   },
   transition: {
-    tillTornado: function(params, el) {
+    tillTornado: async function(params, el) {
       //todo..
+      var vid = document.createElement("video");
+      vid.classList.add("tranistion");
+      vid.autoplay = true;
+      vid.controls = false;
+      vid.src = "till-tornado.mkv";
+      await new Promise(e => (vid.onended = e));
     }
   }
 };
@@ -238,8 +281,6 @@ async function prefetch() {
         ? q.correctSequence.length / Number(q.type.split(" ")[1])
         : 1;
   }
-  // var queue = [];
-  // var queueLength = total;
   // var loaded = 0;
   for (let q of cfg.questions) {
     if (q.contentType === "img") {
@@ -256,7 +297,6 @@ async function prefetch() {
         // progressBar.style.backgroundSize = 100 * (loaded / total) + "% 100%";
         // };
         i++;
-        // progressBar.style.backgroundSize = 100 * (i / total) + "% 100%";
       }
     }
   }
@@ -267,7 +307,7 @@ async function prefetch() {
   // document.getElementsByClassName("loading")[0].remove();
 }
 
-function parse() {
+async function parse() {
   let question = cfg.questions[state.questionIndex];
   if (!state.currentQuestion)
     state.currentQuestion = Object.assign({}, question);
@@ -279,11 +319,12 @@ function parse() {
       let propProviders = providers[prop];
       for (let str of question[prop].split(",")) {
         let words = str.split(" ");
-        propProviders[words[0]](
+        var ret = propProviders[words[0]](
           words.slice(1),
           state.currentQuestion,
           mainContent
         );
+        if (ret instanceof Promise) await ret;
       }
     }
   }
@@ -318,9 +359,9 @@ async function onChoice(main, question, el) {
 }
 
 function endScreen() {
-  mainContent.style.display = "none";
+  mainContent.classList.add("inactive");
   let logo = document.getElementsByClassName("logo")[0];
-  logo.style.display = "none";
+  logo.classList.add("inactive");
   var screen = document.createElement("div");
   screen.classList.add("end-screen");
   {
@@ -330,7 +371,7 @@ function endScreen() {
     else if (state.correct >= state.question * 0.35) img = "till";
     else img = "till-angry";
     let display = new Image();
-    display.src = "img/" + img + ".jpg";
+    display.src = "img/" + img + ".png";
     display.className = "display-container";
     screen.appendChild(display);
   }
@@ -342,9 +383,25 @@ function endScreen() {
   text.style.direction = "rtl";
 
   screen.append(text);
+  {
+    var backButton = document.createElement("div");
+    backButton.classList.add("back-button");
+    backButton.onclick = _ => {
+      state = {
+        questionIndex: 0,
+        question: 0,
+        correct: 0,
+        currentQuestion: undefined,
+        next: false
+      };
+      screen.classList.add("inactive");
+      logo.classList.remove("inactive");
+      mainContent.classList.remove("inactive");
+      parse();
+    };
+    screen.appendChild(backButton);
+  }
   document.body.append(screen);
-  //todo... back button.
-  //todo...
 }
 
 function next() {
@@ -363,9 +420,35 @@ function next() {
   }
 }
 
-function placeRandom(...args) {
-  //todo... locations
+function createRandomTransformed(...args) {
+  var tmpTransforms = [...placeRandom.bounds];
+  var elements = [];
+  for (let arg of args) {
+    var rndIndex = Math.round(Math.random() * (tmpPlaces.length - 1));
+    var transforms = tmpPlaces[rndIndex];
+    tmpTransforms = tmpTransforms.removeIndex(rndIndex);
+    var element = document.createElement("div");
+    element.classList.add(arg);
+    element.style.top = transforms.y;
+    element.style.left = transforms.x;
+    element.style.width = transforms.length;
+    element.style.height = transforms.length;
+    element.style.transform = transforms.transform;
+    element.style.zIndex = "-1";
+    elements.push(element);
+  }
+  return elements;
 }
+
+function iconClicked(main, question, el) {
+  question.right++;
+  if (question.right === question.toFind) next();
+}
+
+//todo... locations
+createRandomTransformed.bounds = [
+  { x: "", y: "", length: "", transform: "rotateY(90deg)" }
+];
 
 function parseChoice(params, question) {
   if (question.correctSequence) {
